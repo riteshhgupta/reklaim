@@ -5,7 +5,7 @@ package com.riteshgupta.reklaim
  */
 
 
-class UserCellModel(override val title: String): UserCellViewInterface {
+class UserItemModel(override val title: String): UserItemViewInterface {
 
     override val layoutId: Int get() = R.layout.item_user
 }

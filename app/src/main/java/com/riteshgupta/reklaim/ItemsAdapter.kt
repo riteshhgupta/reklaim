@@ -18,17 +18,22 @@ interface ItemView<in Model: ItemModel> {
     fun configure(model: Model)
 }
 
+typealias ViewHolderHandler = (Int, View) -> RecyclerView.ViewHolder
+
 open class ItemsAdapter(
         private val items: Array<ItemModel>,
-        private val itemViewForLayoutId: ((Int) -> View)): RecyclerView.Adapter<ItemsAdapter.ViewHolder>() {
+        private val viewHolderForLayoutId: ViewHolderHandler): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = itemViewForLayoutId(viewType)
-        return ViewHolder(itemView)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return viewHolderForLayoutId(
+                viewType,
+                parent.loadLayout(viewType)
+        )
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val cell = holder.itemView as ItemView<ItemModel>
+    @Suppress("UNCHECKED_CAST")
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val cell = holder as? ItemView<ItemModel> ?: return
         val model = items[position]
         cell.configure(model)
     }
@@ -40,6 +45,4 @@ open class ItemsAdapter(
     override fun getItemCount(): Int {
         return items.count()
     }
-
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
