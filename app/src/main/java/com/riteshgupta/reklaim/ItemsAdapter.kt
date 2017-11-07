@@ -22,7 +22,7 @@ typealias ViewHolderHandler = (Int, View) -> RecyclerView.ViewHolder
 
 open class ItemsAdapter(
         private val items: Array<ItemModel>,
-        private val viewHolderForLayoutId: ViewHolderHandler): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        private val viewHolderForLayoutId: ViewHolderHandler) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return viewHolderForLayoutId(
@@ -31,12 +31,13 @@ open class ItemsAdapter(
         )
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val cell = holder as? ItemView<ItemModel> ?: return
+        val cell = itemHolder<ItemView<ItemModel>>(holder) ?: return
         val model = items[position]
         cell.configure(model)
     }
+
+    private inline fun <reified T> itemHolder(view: RecyclerView.ViewHolder): T? = view as? T
 
     override fun getItemViewType(position: Int): Int {
         return items[position].layoutId
